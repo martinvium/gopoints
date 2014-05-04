@@ -16,11 +16,11 @@ func NewPlaythrough(session *gocql.Session, userId string, points int) *Playthro
 	return &Playthrough{session, userId, gocql.TimeUUID(), points}
 }
 
-func (self *Playthrough) valid() bool {
+func (self *Playthrough) Valid() bool {
 	return true
 }
 
-func (self *Playthrough) save() {
+func (self *Playthrough) Save() {
 	sql := `INSERT INTO playthroughs (user_id, timestamp, points) VALUES (?, ?, ?)`
 	err := self.session.Query(sql,
 		self.userId,

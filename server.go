@@ -20,9 +20,16 @@ func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session
 		return
 	}
 
+	user, err := FindUser(session, message.UserId)
+	if err != nil {
+		http.Error(w, "User not found: "+message.UserId, http.StatusNotFound)
+		return
+	}
+
 	playthrough := NewPlaythrough(session, message.UserId, message.Points)
-	if playthrough.valid() {
-		go playthrough.save()
+	if playthrough.Valid() {
+		go playthrough.Save()
+		go user.UpdateMaxPointsIfLarger(message.Points)
 	} else {
 		http.Error(w, "Playthrough was not valid", http.StatusBadRequest)
 	}

@@ -17,6 +17,19 @@ Installation
       PRIMARY KEY (user_id, timestamp)
     );
 
+    CREATE TABLE users (
+      user_id text,
+      maxpoints int,
+      PRIMARY KEY (user_id)
+    );
+
+Dummy Data
+----------
+
+    INSERT INTO users (user_id, maxpoints) VALUES ('player_a', 0);
+    INSERT INTO users (user_id, maxpoints) VALUES ('player_b', 0);
+    INSERT INTO users (user_id, maxpoints) VALUES ('player_c', 0);
+
 API
 ---
 
