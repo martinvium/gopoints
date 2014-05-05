@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"github.com/gocql/gocql"
 	"net/http"
 )
@@ -10,6 +10,11 @@ import (
 type PlaythroughMessage struct {
 	UserId string
 	Points int
+}
+
+type FriendMessage struct {
+	FriendId  string
+	MaxPoints int
 }
 
 // TODO error if content type is not json
@@ -36,14 +41,25 @@ func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session
 	}
 }
 
+// TODO use an array instead of sending multiple seperate entities to the encoder
 func topFriendsAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
 	user, err := FindUser(session, "player_a")
 	if err != nil {
 		panic(err)
 	}
 
-	friends := user.FriendsIter()
-	fmt.Printf("Friends: %s\n", friends)
+	w.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(w)
+
+	friend := new(FriendMessage)
+	iter := user.FriendsIter()
+	for iter.Scan(nil, &friend.FriendId, &friend.MaxPoints) {
+		encoder.Encode(friend)
+	}
+
+	if err := iter.Close(); err != nil {
+		panic(err)
+	}
 }
 
 // imagine this is a cron job instead

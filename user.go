@@ -41,7 +41,7 @@ func UpdateFriendsMaxPoints(session *gocql.Session) {
 	iter := session.Query(sql).Iter()
 	for iter.Scan(&user.UserId, &user.MaxPoints) {
 		fmt.Printf("Updating max points for user: %s\n", user.UserId)
-		user.updateFriendsMaxPoints()
+		go user.updateFriendsMaxPoints()
 	}
 
 	if err := iter.Close(); err != nil {

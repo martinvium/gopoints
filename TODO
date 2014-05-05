@@ -1,3 +1,3 @@
-- investigate secondary index for friends
-- remove maxpoints from pk so we can update it...
-- find out how to order by a non-indexed column?
+- only accept get/post etc for actions
+- return array in topfriends action
+- check client sends content-type in create action
