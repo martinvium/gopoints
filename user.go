@@ -28,6 +28,45 @@ func FindUser(session *gocql.Session, userId string) (*User, error) {
 	return user, nil
 }
 
+func findAllFriendsByUserId(session *gocql.Session, userId string) *gocql.Iter {
+	sql := `SELECT friend_id FROM friends WHERE user_id = ?`
+	return session.Query(sql, userId).Iter()
+}
+
+func UpdateFriendsMaxPoints(session *gocql.Session) {
+	var user User
+	user.session = session
+
+	sql := `SELECT user_id, maxpoints FROM users` // AND updated_at > LAST_RUN
+	iter := session.Query(sql).Iter()
+	for iter.Scan(&user.UserId, &user.MaxPoints) {
+		fmt.Printf("Updating max points for user: %s\n", user.UserId)
+		user.updateFriendsMaxPoints()
+	}
+
+	if err := iter.Close(); err != nil {
+		panic(err)
+	}
+}
+
+// friendsIn := strings.Join(friends, ",")
+func (self *User) updateFriendsMaxPoints() {
+	var friendId string
+
+	iter := self.FriendsIter()
+	for iter.Scan(nil, &friendId, nil) {
+		sql := `UPDATE friends SET maxpoints = ? WHERE user_id = ? AND friend_id = ?`
+		if err := self.session.Query(sql, self.MaxPoints, friendId, self.UserId).Exec(); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func (self *User) FriendsIter() *gocql.Iter {
+	sql := `SELECT user_id, friend_id, maxpoints FROM friends WHERE user_id = ?`
+	return self.session.Query(sql, self.UserId).Iter()
+}
+
 func (self *User) Valid() bool {
 	return true
 }

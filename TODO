@@ -1,0 +1,3 @@
+- investigate secondary index for friends
+- remove maxpoints from pk so we can update it...
+- find out how to order by a non-indexed column?

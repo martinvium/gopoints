@@ -23,12 +23,29 @@ Installation
       PRIMARY KEY (user_id)
     );
 
+    CREATE TABLE friends (
+      user_id text,
+      friend_id text,
+      maxpoints int,
+      PRIMARY KEY (user_id, friend_id)
+    );
+
+    // SELECT maxpoints FROM friends WHERE user_id = x ORDER BY maxpoints DESC
+    // SELECT maxpoints FROM friends WHERE user_id IN(<friend-ids>) ORDER BY maxpoints DESC
+    // UPDATE friends SET maxpoints = x WHERE friend_id = y
+
 Dummy Data
 ----------
 
     INSERT INTO users (user_id, maxpoints) VALUES ('player_a', 0);
     INSERT INTO users (user_id, maxpoints) VALUES ('player_b', 0);
     INSERT INTO users (user_id, maxpoints) VALUES ('player_c', 0);
+
+    INSERT INTO friends (user_id, friend_id, maxpoints) VALUES ('player_a', 'player_b', 0);
+    INSERT INTO friends (user_id, friend_id, maxpoints) VALUES ('player_a', 'player_c', 0);
+    INSERT INTO friends (user_id, friend_id, maxpoints) VALUES ('player_b', 'player_a', 0);
+    INSERT INTO friends (user_id, friend_id, maxpoints) VALUES ('player_b', 'player_c', 0);
+    INSERT INTO friends (user_id, friend_id, maxpoints) VALUES ('player_c', 'player_b', 0);
 
 API
 ---

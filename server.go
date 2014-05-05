@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gocql/gocql"
 	"net/http"
 )
@@ -35,6 +36,21 @@ func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session
 	}
 }
 
+func topFriendsAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
+	user, err := FindUser(session, "player_a")
+	if err != nil {
+		panic(err)
+	}
+
+	friends := user.FriendsIter()
+	fmt.Printf("Friends: %s\n", friends)
+}
+
+// imagine this is a cron job instead
+func wannabeCronAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
+	go UpdateFriendsMaxPoints(session)
+}
+
 func NewCassandraSession(keyspace string) *gocql.Session {
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = keyspace
@@ -53,6 +69,14 @@ func main() {
 
 	http.HandleFunc("/playthroughs", func(w http.ResponseWriter, r *http.Request) {
 		createAction(w, r, session)
+	})
+
+	http.HandleFunc("/topfriends", func(w http.ResponseWriter, r *http.Request) {
+		topFriendsAction(w, r, session)
+	})
+
+	http.HandleFunc("/wannabecron", func(w http.ResponseWriter, r *http.Request) {
+		wannabeCronAction(w, r, session)
 	})
 
 	err := http.ListenAndServe(":8080", nil)
