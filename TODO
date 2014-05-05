@@ -1,3 +1,5 @@
 - only accept get/post etc for actions
 - return array in topfriends action
 - check client sends content-type in create action
+- add name to users
+- store playthrough durations?
