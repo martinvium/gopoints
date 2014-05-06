@@ -17,7 +17,7 @@ type FriendMessage struct {
 	MaxPoints int
 }
 
-// TODO error if content type is not json
+// TODO error if content type is not json?
 func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
 	var message PlaythroughMessage
 	decoder := json.NewDecoder(r.Body)
@@ -43,23 +43,27 @@ func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session
 
 // TODO use an array instead of sending multiple seperate entities to the encoder
 func topFriendsAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
-	user, err := FindUser(session, "player_a")
+	user, err := FindUser(session, "player_a") // implement authentication or make it an arg?
 	if err != nil {
-		panic(err)
+		http.Error(w, "User not found", http.StatusNotFound)
 	}
 
 	w.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 
-	friend := new(FriendMessage)
+	friends := make([]FriendMessage, 0)
+
+	friend := FriendMessage{}
 	iter := user.FriendsIter()
 	for iter.Scan(nil, &friend.FriendId, &friend.MaxPoints) {
-		encoder.Encode(friend)
+		friends = append(friends, friend)
 	}
 
 	if err := iter.Close(); err != nil {
 		panic(err)
 	}
+
+	encoder.Encode(friends)
 }
 
 // imagine this is a cron job instead

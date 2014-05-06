@@ -30,10 +30,6 @@ Installation
       PRIMARY KEY (user_id, friend_id)
     );
 
-    // SELECT maxpoints FROM friends WHERE user_id = x ORDER BY maxpoints DESC
-    // SELECT maxpoints FROM friends WHERE user_id IN(<friend-ids>) ORDER BY maxpoints DESC
-    // UPDATE friends SET maxpoints = x WHERE friend_id = y
-
 Dummy Data
 ----------
 
@@ -59,3 +55,5 @@ Register a playthrough
       "user_id": "abcd",
       "points": 1234
     }
+
+Get friends list
