@@ -12,6 +12,11 @@ type Playthrough struct {
 	points    int
 }
 
+type PlaythroughJSONRepr struct {
+	UserId string
+	Points int
+}
+
 func NewPlaythrough(session *gocql.Session, userId string, points int) *Playthrough {
 	return &Playthrough{session, userId, gocql.TimeUUID(), points}
 }

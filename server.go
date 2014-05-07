@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-type PlaythroughMessage struct {
-	UserId string
-	Points int
-}
-
-// TODO error if content type is not json?
+// GET /playthroughs
 func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
-	var message PlaythroughMessage
+	if r.Method != "GET" {
+		http.NotFound(w, r)
+		return
+	}
+
+	var message PlaythroughJSONRepr
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&message); err != nil {
 		http.Error(w, "Failed to parse json from body", http.StatusBadRequest)
@@ -35,23 +35,33 @@ func createAction(w http.ResponseWriter, r *http.Request, session *gocql.Session
 	}
 }
 
-// TODO use an array instead of sending multiple seperate entities to the encoder
+// GET /topfriends
 func topFriendsAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
+	if r.Method != "GET" {
+		http.NotFound(w, r)
+		return
+	}
+
 	user, err := FindUser(session, "player_a") // implement authentication or make it an arg?
 	if err != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
 	}
 
 	w.Header().Add("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
 
 	friends := FindTopFriends(user)
-
+	encoder := json.NewEncoder(w)
 	encoder.Encode(friends)
 }
 
 // imagine this is a cron job instead
+// POST /wannabecron
 func wannabeCronAction(w http.ResponseWriter, r *http.Request, session *gocql.Session) {
+	if r.Method != "POST" {
+		http.NotFound(w, r)
+		return
+	}
+
 	go UpdateFriendsMaxPoints(session)
 }
 
