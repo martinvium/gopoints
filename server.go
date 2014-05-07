@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	// "fmt"
 	"github.com/gocql/gocql"
 	"net/http"
 )
@@ -10,11 +9,6 @@ import (
 type PlaythroughMessage struct {
 	UserId string
 	Points int
-}
-
-type FriendMessage struct {
-	FriendId  string
-	MaxPoints int
 }
 
 // TODO error if content type is not json?
@@ -51,17 +45,7 @@ func topFriendsAction(w http.ResponseWriter, r *http.Request, session *gocql.Ses
 	w.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 
-	friends := make([]FriendMessage, 0)
-
-	friend := FriendMessage{}
-	iter := user.FriendsIter()
-	for iter.Scan(nil, &friend.FriendId, &friend.MaxPoints) {
-		friends = append(friends, friend)
-	}
-
-	if err := iter.Close(); err != nil {
-		panic(err)
-	}
+	friends := FindTopFriends(user)
 
 	encoder.Encode(friends)
 }
