@@ -5,6 +5,8 @@ Webservice that collects points from users and exposes friends points in a feed.
 
 DISCLAIMER: there are no security considerations built into this example app.
 
+[![Build Status](https://travis-ci.org/martinvium/gopoints.png)](https://travis-ci.org/martinvium/gopoints)
+
 Installation
 ------------
 
